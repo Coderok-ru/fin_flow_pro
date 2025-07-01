@@ -4,6 +4,7 @@ import 'package:fin_flow_pro/app/bindings/home_binding.dart';
 import 'package:fin_flow_pro/app/bindings/income_binding.dart';
 import 'package:fin_flow_pro/app/bindings/expense_binding.dart';
 import 'package:fin_flow_pro/app/bindings/calendar_binding.dart';
+import 'package:fin_flow_pro/app/bindings/statistics_binding.dart';
 import 'package:fin_flow_pro/app/bindings/finance_binding.dart';
 import 'package:fin_flow_pro/app/views/home/home_view.dart';
 import 'package:fin_flow_pro/app/views/income/income_list_view.dart';
@@ -12,6 +13,7 @@ import 'package:fin_flow_pro/app/views/expense/expense_list_view.dart';
 import 'package:fin_flow_pro/app/views/expense/expense_form_view.dart';
 import 'package:fin_flow_pro/app/views/expense/expense_categories_view.dart';
 import 'package:fin_flow_pro/app/views/calendar/calendar_view.dart';
+import 'package:fin_flow_pro/app/views/statistics/statistics_view.dart';
 import 'package:fin_flow_pro/app/views/settings_view.dart';
 import 'package:fin_flow_pro/app/views/finance/finance_view.dart';
 import 'package:fin_flow_pro/app/views/finance/budget_planning_view.dart';
@@ -54,6 +56,11 @@ class AppPages {
       name: AppRoutes.CALENDAR,
       page: () => const CalendarView(),
       binding: CalendarBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.STATISTICS,
+      page: () => const StatisticsView(),
+      binding: StatisticsBinding(),
     ),
     GetPage(
       name: AppRoutes.SETTINGS,

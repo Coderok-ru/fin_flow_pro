@@ -9,6 +9,7 @@ import 'package:fin_flow_pro/app/controllers/home_controller.dart';
 import 'package:fin_flow_pro/app/controllers/income_controller.dart';
 import 'package:fin_flow_pro/app/controllers/expense_controller.dart';
 import 'package:fin_flow_pro/app/controllers/statistics_controller.dart';
+import 'package:fin_flow_pro/app/controllers/budget_controller.dart';
 import 'package:fin_flow_pro/app/constants/theme_constants.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -21,8 +22,9 @@ void main() async {
   // Инициализация сервиса хранения данных
   await Get.putAsync(() => StorageService().init());
   
-  // Явная инициализация всех контроллеров
+  // Явная инициализация всех контроллеров в правильном порядке
   Get.put(ThemeController());
+  Get.put(BudgetController()); // Инициализируем BudgetController до FinanceController
   Get.put(IncomeController());
   Get.put(ExpenseController());
   Get.put(HomeController());

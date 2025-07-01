@@ -24,7 +24,7 @@ enum FinanceSection {
 /// Контроллер для экрана финансов
 class FinanceController extends GetxController {
   /// Ссылка на контроллер бюджета
-  final BudgetController _budgetController = Get.find<BudgetController>();
+  late final BudgetController _budgetController;
   
   /// Текущий активный раздел
   final _currentSection = FinanceSection.overview.obs;
@@ -50,14 +50,15 @@ class FinanceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    
+    // Инициализируем контроллер бюджета
+    _budgetController = Get.find<BudgetController>();
+    
     _loadTransactions();
     _calculateActualExpenses();
     
-    // Слушаем изменения в BudgetController, чтобы обновлять данные
-    // Подписываемся на обновления в BudgetController
-    _budgetController.addListener(() {
-      _calculateActualExpenses();
-    });
+    // Правильно подписываемся на изменения в BudgetController
+    ever(_budgetController.budgets, (_) => _calculateActualExpenses());
   }
 
   /// Загружает список транзакций (расходов и доходов)
@@ -74,7 +75,8 @@ class FinanceController extends GetxController {
     _actualExpenses.clear();
     
     // Если нет активного бюджета, нечего считать
-    if (activeBudget == null) return;
+    final currentBudget = activeBudget;
+    if (currentBudget == null) return;
     
     // TODO: Рассчитать фактические расходы на основе транзакций
     // Для тестирования используем различные проценты выполнения бюджета
@@ -86,7 +88,7 @@ class FinanceController extends GetxController {
       '5': 0.30, // Здоровье - 30% бюджета
     };
     
-    for (final entry in activeBudget!.categoryBudgets.entries) {
+    for (final entry in currentBudget.categoryBudgets.entries) {
       final categoryId = entry.key;
       final budgetAmount = entry.value;
       
@@ -102,9 +104,10 @@ class FinanceController extends GetxController {
 
   /// Вычисляет процент выполнения бюджета для категории
   double getBudgetCompletionPercentage(String categoryId) {
-    if (activeBudget == null) return 0.0;
+    final currentBudget = activeBudget;
+    if (currentBudget == null) return 0.0;
     
-    final budgetAmount = activeBudget!.getBudgetForCategory(categoryId);
+    final budgetAmount = currentBudget.getBudgetForCategory(categoryId);
     if (budgetAmount <= 0) return 0.0;
     
     final actualAmount = _actualExpenses[categoryId] ?? 0.0;
@@ -113,9 +116,10 @@ class FinanceController extends GetxController {
 
   /// Вычисляет общий процент выполнения бюджета
   double getTotalBudgetCompletionPercentage() {
-    if (activeBudget == null) return 0.0;
+    final currentBudget = activeBudget;
+    if (currentBudget == null) return 0.0;
     
-    final totalBudget = activeBudget!.allocatedAmount;
+    final totalBudget = currentBudget.allocatedAmount;
     if (totalBudget <= 0) return 0.0;
     
     final totalExpenses = _actualExpenses.values.fold(0.0, (sum, amount) => sum + amount);
@@ -124,9 +128,10 @@ class FinanceController extends GetxController {
 
   /// Получает остаток бюджета для категории
   double getRemainingBudget(String categoryId) {
-    if (activeBudget == null) return 0.0;
+    final currentBudget = activeBudget;
+    if (currentBudget == null) return 0.0;
     
-    final budgetAmount = activeBudget!.getBudgetForCategory(categoryId);
+    final budgetAmount = currentBudget.getBudgetForCategory(categoryId);
     final actualAmount = _actualExpenses[categoryId] ?? 0.0;
     
     return budgetAmount - actualAmount;
@@ -134,9 +139,10 @@ class FinanceController extends GetxController {
 
   /// Получает общий остаток бюджета
   double getTotalRemainingBudget() {
-    if (activeBudget == null) return 0.0;
+    final currentBudget = activeBudget;
+    if (currentBudget == null) return 0.0;
     
-    final totalBudget = activeBudget!.allocatedAmount;
+    final totalBudget = currentBudget.allocatedAmount;
     final totalExpenses = _actualExpenses.values.fold(0.0, (sum, amount) => sum + amount);
     
     return totalBudget - totalExpenses;
@@ -183,7 +189,8 @@ class FinanceController extends GetxController {
 
   /// Анализирует расходы и предлагает оптимизацию бюджета
   Map<String, double> analyzeBudgetOptimization() {
-    if (activeBudget == null) return {};
+    final currentBudget = activeBudget;
+    if (currentBudget == null) return {};
     
     final optimizedBudget = <String, double>{};
     
@@ -191,15 +198,16 @@ class FinanceController extends GetxController {
     // статистики расходов и приоритетов категорий
     
     // Пока возвращаем текущее распределение
-    return Map.from(activeBudget!.categoryBudgets);
+    return Map.from(currentBudget.categoryBudgets);
   }
   
   /// Получает список категорий, превышающих бюджет
   List<String> getOverspentCategories() {
     final result = <String>[];
     
-    if (activeBudget != null) {
-      for (final categoryId in activeBudget!.categoryBudgets.keys) {
+    final currentBudget = activeBudget;
+    if (currentBudget != null) {
+      for (final categoryId in currentBudget.categoryBudgets.keys) {
         if (isBudgetExceeded(categoryId)) {
           result.add(categoryId);
         }
@@ -213,8 +221,9 @@ class FinanceController extends GetxController {
   List<String> getUnderspentCategories({double threshold = 50.0}) {
     final result = <String>[];
     
-    if (activeBudget != null) {
-      for (final categoryId in activeBudget!.categoryBudgets.keys) {
+    final currentBudget = activeBudget;
+    if (currentBudget != null) {
+      for (final categoryId in currentBudget.categoryBudgets.keys) {
         final percentage = getBudgetCompletionPercentage(categoryId);
         if (percentage < threshold) {
           result.add(categoryId);

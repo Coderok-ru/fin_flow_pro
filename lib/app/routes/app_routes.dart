@@ -6,6 +6,7 @@ abstract class AppRoutes {
   static const EXPENSE_FORM = '/expense/form';
   static const EXPENSE_CATEGORIES = '/expense/categories';
   static const CALENDAR = '/calendar'; // Заменили Statistics на Calendar
+  static const STATISTICS = '/statistics'; // Добавляем маршрут для статистики
   static const SETTINGS = '/settings';
 
   // Маршруты для модуля финансов
